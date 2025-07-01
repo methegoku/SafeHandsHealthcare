@@ -1,0 +1,214 @@
+asted-SafeHands-Trusted-Care-Right-at-Your-Doorstep-Tagline-Trusted-Care-Right-at-Your-Doorstep-O-1750140904257_1750140904259.txt
+SafeHands – Trusted Care, Right at Your Doorstep
+Tagline
+Trusted Care, Right at Your Doorstep
+
+Overview
+Create a full-stack web application called SafeHands that connects users with trusted home care, medical, and child care professionals. The platform should emphasize safety, verified providers, transparent ratings, and a seamless booking experience. The UI should be clean and modern, using a light blue and white color palette, and be fully responsive.
+
+User Roles
+Client/User: Can search, browse, and book services.
+
+Provider: Can register, create a profile, and accept bookings.
+
+Admin: Manages categories, providers, bookings, and reviews.
+
+Core Features
+1. City Selection & Location Detection
+At the top of every page, show a city selector beside a search bar.
+
+On first visit, prompt the user for location permission:
+
+If granted, auto-select the nearest city (using browser geolocation and a city list).
+
+User can always manually change city from the selector.
+
+Search bar allows searching for cities and/or services.
+
+2. Service Categories
+Three main categories, each with its own set of services:
+
+Home Care: Home Nursing, Elderly Care, Respite Care, Caregivers, Part-Time Caregivers, Private Nurses, Medical Escort, Travel Companion, Meal Cooks.
+
+Medical Services at Home: Doctor Visit, Physiotherapy, Occupational Therapy, Speech Therapy, For Back Pain, For Neck Pain, For Knee Pain, For Muscle Strain, For Sports Injury, Massage and Spa.
+
+Child Care: Babysitting, Child Healthcare, Baby Massage, Baby Care.
+
+Display categories as cards or tabs on the homepage.
+
+3. Provider Discovery
+Users can filter providers by city, category, and specific service.
+
+Each provider profile displays:
+
+Photo, bio, years of experience, qualifications
+
+Services offered, pricing (hourly/session)
+
+Verified badge (for demo, mock verification)
+
+Ratings (average, total reviews)
+
+Featured reviews
+
+Top-rated providers are shown first in search results.
+
+4. Booking Flow
+Multi-step booking process:
+
+Select City (auto/manual)
+
+Choose Category & Service
+
+View Providers (filtered by service/city)
+
+Select Provider
+
+Pick Date & Time
+
+Review Booking Details
+
+Confirm Booking
+
+Show Booking Confirmation
+
+Users can view and manage their bookings in a dashboard.
+
+5. Ratings & Reviews
+After service completion, users can rate providers and leave reviews.
+
+Top reviews are featured on the homepage (bottom section).
+
+Providers’ average ratings determine their order in search results.
+
+6. Authentication & Security
+JWT-based authentication for users and providers.
+
+Registration/login for both roles.
+
+Mock biometric and ID verification for providers (for demo).
+
+7. Admin Panel
+Manage users, providers, bookings, categories, and featured reviews.
+
+UI/UX Guidelines
+Color Palette: Light blue (#ADD8E6) and white (#FFFFFF), with accents matching your logo.
+
+Navigation: Sticky header with logo, tagline, city selector, and search bar.
+
+Homepage:
+
+Hero section with logo, tagline, city selector, and search bar.
+
+Service categories as cards/tabs.
+
+Featured/top-rated providers.
+
+Featured client reviews carousel at the bottom.
+
+Provider Listing: Grid or list view with sorting/filtering options.
+
+Booking Flow: Progress bar or stepper UI.
+
+Responsive: Fully functional on mobile and desktop.
+
+Backend
+Models
+User (Client/Provider)
+
+City
+
+ServiceCategory
+
+Service
+
+ProviderProfile (linked to User)
+
+ProviderService (many-to-many: provider ↔ services)
+
+Booking
+
+Review
+
+Admin
+
+API Endpoints
+/api/cities (GET)
+
+/api/service-categories (GET)
+
+/api/services?cityId=&categoryId= (GET)
+
+/api/providers?serviceId=&cityId= (GET)
+
+/api/providers/:id (GET)
+
+/api/bookings (POST, GET by user/provider)
+
+/api/reviews (POST, GET by provider)
+
+/api/featured-reviews (GET)
+
+/api/auth/register (POST)
+
+/api/auth/login (POST)
+
+/api/admin/* (CRUD for categories, services, users, providers, reviews)
+
+Database
+Use PostgreSQL with Sequelize ORM.
+
+Seed with sample cities, categories, services, providers, and reviews.
+
+Folder Structure
+text
+/frontend
+  /src
+    /components
+      Header.js
+      CitySelector.js
+      SearchBar.js
+      CategoryCards.js
+      ServiceList.js
+      ProviderList.js
+      BookingFlow.js
+      FeaturedReviews.js
+      RatingStars.js
+      Auth/
+      Profile/
+    /pages
+      Home.js
+      Providers.js
+      Booking.js
+      Dashboard.js
+      AdminPanel.js
+    /styles
+      theme.js (light blue & white)
+  package.json
+
+/backend
+  /models
+    user.js
+    city.js
+    serviceCategory.js
+    service.js
+    providerProfile.js
+    providerService.js
+    booking.js
+    review.js
+    admin.js
+  /routes
+    auth.js
+    cities.js
+    categories.js
+    services.js
+    providers.js
+    bookings.js
+    reviews.js
+    admin.js
+  /controllers
+  /middleware
+  config.js
+  server.js
+  package.json
+...
