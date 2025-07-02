@@ -4,24 +4,43 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Badge } from "@/components/ui/badge";
 import { MapPin, Search, Filter } from "lucide-react";
-import { Link } from "wouter";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import ProviderCard from "@/components/ProviderCard";
+
+interface City {
+  id: number;
+  name: string;
+  state: string;
+}
+
+interface Service {
+  id: number;
+  name: string;
+}
 
 export default function Providers() {
   const [selectedCity, setSelectedCity] = useState<string>("");
   const [selectedService, setSelectedService] = useState<string>("");
   const [searchQuery, setSearchQuery] = useState("");
 
-  const { data: cities } = useQuery({
+  const { data: cities = [] } = useQuery<City[]>({
     queryKey: ["/api/cities"],
+    queryFn: async () => {
+      const res = await fetch("/api/cities");
+      if (!res.ok) throw new Error("Failed to fetch cities");
+      return res.json();
+    },
   });
 
-  const { data: services } = useQuery({
+  const { data: services = [] } = useQuery<Service[]>({
     queryKey: ["/api/services"],
+    queryFn: async () => {
+      const res = await fetch("/api/services");
+      if (!res.ok) throw new Error("Failed to fetch services");
+      return res.json();
+    },
   });
 
   const { data: providers, isLoading } = useQuery({
@@ -30,7 +49,6 @@ export default function Providers() {
       const params = new URLSearchParams();
       if (selectedCity) params.append("cityId", selectedCity);
       if (selectedService) params.append("serviceId", selectedService);
-      
       const response = await fetch(`/api/providers?${params}`);
       if (!response.ok) throw new Error("Failed to fetch providers");
       return response.json();
@@ -40,14 +58,16 @@ export default function Providers() {
   const filteredProviders = providers?.filter((provider: any) => {
     if (!searchQuery) return true;
     const fullName = `${provider.user?.firstName} ${provider.user?.lastName}`.toLowerCase();
-    return fullName.includes(searchQuery.toLowerCase()) || 
-           provider.bio?.toLowerCase().includes(searchQuery.toLowerCase());
+    return (
+      fullName.includes(searchQuery.toLowerCase()) ||
+      provider.bio?.toLowerCase().includes(searchQuery.toLowerCase())
+    );
   });
 
   return (
     <div className="min-h-screen bg-white">
       <Header />
-      
+
       {/* Header Section */}
       <section className="bg-gray-50 py-12">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -73,14 +93,14 @@ export default function Providers() {
                     className="pl-10"
                   />
                 </div>
-                
+
                 <Select value={selectedCity} onValueChange={setSelectedCity}>
                   <SelectTrigger>
                     <SelectValue placeholder="Select City" />
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="">All Cities</SelectItem>
-                    {cities?.map((city: any) => (
+                    {cities.map((city) => (
                       <SelectItem key={city.id} value={city.id.toString()}>
                         {city.name}, {city.state}
                       </SelectItem>
@@ -94,7 +114,7 @@ export default function Providers() {
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="">All Services</SelectItem>
-                    {services?.map((service: any) => (
+                    {services.map((service) => (
                       <SelectItem key={service.id} value={service.id.toString()}>
                         {service.name}
                       </SelectItem>
@@ -102,8 +122,8 @@ export default function Providers() {
                   </SelectContent>
                 </Select>
 
-                <Button 
-                  variant="outline" 
+                <Button
+                  variant="outline"
                   className="border-brand-blue-dark text-brand-blue-dark hover:bg-brand-blue-dark hover:text-white"
                 >
                   <Filter className="w-4 h-4 mr-2" />
@@ -124,12 +144,12 @@ export default function Providers() {
                 {filteredProviders?.length || 0} Providers Found
               </h2>
               <p className="text-gray-600">
-                Showing verified professionals 
-                {selectedCity && ` in ${cities?.find((c: any) => c.id.toString() === selectedCity)?.name}`}
-                {selectedService && ` for ${services?.find((s: any) => s.id.toString() === selectedService)?.name}`}
+                Showing verified professionals
+                {selectedCity && ` in ${cities.find((c) => c.id.toString() === selectedCity)?.name}`}
+                {selectedService && ` for ${services.find((s) => s.id.toString() === selectedService)?.name}`}
               </p>
             </div>
-            
+
             <div className="flex items-center space-x-2">
               <span className="text-sm text-gray-600">Sort by:</span>
               <Select defaultValue="rating">
@@ -174,7 +194,7 @@ export default function Providers() {
               <p className="text-gray-600 mb-6">
                 Try adjusting your search criteria or location to find more providers.
               </p>
-              <Button 
+              <Button
                 onClick={() => {
                   setSelectedCity("");
                   setSelectedService("");

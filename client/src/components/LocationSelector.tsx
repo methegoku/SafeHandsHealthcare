@@ -11,6 +11,14 @@ interface LocationSelectorProps {
   className?: string;
 }
 
+interface City {
+  id: number;
+  name: string;
+  state: string;
+  latitude?: string;
+  longitude?: string;
+}
+
 export default function LocationSelector({ 
   onLocationSelect, 
   selectedCityId,
@@ -19,8 +27,13 @@ export default function LocationSelector({
   const [isDetecting, setIsDetecting] = useState(false);
   const [detectedLocation, setDetectedLocation] = useState<{ lat: number; lng: number } | null>(null);
 
-  const { data: cities } = useQuery({
+  const { data: cities = [], isLoading } = useQuery<City[]>({
     queryKey: ["/api/cities"],
+    queryFn: async () => {
+      const res = await fetch("/api/cities");
+      if (!res.ok) throw new Error("Failed to fetch cities");
+      return res.json();
+    },
   });
 
   const handleLocationDetection = () => {
@@ -34,14 +47,13 @@ export default function LocationSelector({
       (position) => {
         const { latitude, longitude } = position.coords;
         setDetectedLocation({ lat: latitude, lng: longitude });
-        
-        // Find nearest city based on coordinates
-        // For now, we'll use a simple distance calculation
-        if (cities && cities.length > 0) {
+
+        // Find nearest city
+        if (cities.length > 0) {
           let nearestCity = cities[0];
           let minDistance = Number.MAX_VALUE;
-          
-          cities.forEach((city: any) => {
+
+          cities.forEach((city) => {
             if (city.latitude && city.longitude) {
               const distance = Math.sqrt(
                 Math.pow(parseFloat(city.latitude) - latitude, 2) +
@@ -53,19 +65,19 @@ export default function LocationSelector({
               }
             }
           });
-          
+
           onLocationSelect?.({
             cityId: nearestCity.id.toString(),
             coordinates: { lat: latitude, lng: longitude }
           });
         }
-        
+
         setIsDetecting(false);
       },
       (error) => {
         console.error("Error getting location:", error);
         let errorMessage = "Unable to detect your location. Please select your city manually.";
-        
+
         switch (error.code) {
           case error.PERMISSION_DENIED:
             errorMessage = "Location access was denied. Please select your city manually.";
@@ -77,7 +89,7 @@ export default function LocationSelector({
             errorMessage = "Location request timed out. Please select your city manually.";
             break;
         }
-        
+
         alert(errorMessage);
         setIsDetecting(false);
       },
@@ -103,7 +115,7 @@ export default function LocationSelector({
             <p className="text-sm text-gray-600">We'll find care professionals near you</p>
           </div>
         </div>
-        
+
         <div className="space-y-4">
           <div className="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-3">
             <Button
@@ -122,7 +134,7 @@ export default function LocationSelector({
                 {isDetecting ? "Detecting..." : detectedLocation ? "Location Detected" : "Use My Location"}
               </span>
             </Button>
-            
+
             <div className="flex-1">
               <CitySelector
                 value={selectedCityId}
@@ -132,7 +144,7 @@ export default function LocationSelector({
               />
             </div>
           </div>
-          
+
           {detectedLocation && (
             <div className="text-sm text-green-600 flex items-center space-x-1">
               <CheckCircle className="w-4 h-4" />

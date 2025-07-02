@@ -11,16 +11,30 @@ interface CitySelectorProps {
   className?: string;
 }
 
-export default function CitySelector({ 
-  value, 
-  onValueChange, 
+// Define the shape of each city returned from /api/cities
+interface City {
+  id: number;
+  name: string;
+  state: string;
+}
+
+export default function CitySelector({
+  value,
+  onValueChange,
   placeholder = "Select City",
-  className = "" 
+  className = ""
 }: CitySelectorProps) {
   const [isDetecting, setIsDetecting] = useState(false);
 
-  const { data: cities, isLoading } = useQuery({
+  const { data: cities = [], isLoading } = useQuery<City[]>({
     queryKey: ["/api/cities"],
+    queryFn: async () => {
+      const res = await fetch("/api/cities");
+      if (!res.ok) {
+        throw new Error("Failed to fetch cities");
+      }
+      return res.json();
+    },
   });
 
   const handleLocationDetection = () => {
@@ -33,13 +47,12 @@ export default function CitySelector({
     navigator.geolocation.getCurrentPosition(
       (position) => {
         const { latitude, longitude } = position.coords;
-        
-        // Find the nearest city based on coordinates
-        // For now, we'll just select the first city as a placeholder
-        if (cities && cities.length > 0 && onValueChange) {
+
+        // Placeholder: select first city after detection
+        if (cities.length > 0 && onValueChange) {
           onValueChange(cities[0].id.toString());
         }
-        
+
         setIsDetecting(false);
       },
       (error) => {
@@ -71,14 +84,14 @@ export default function CitySelector({
           <SelectValue placeholder={placeholder} />
         </SelectTrigger>
         <SelectContent>
-          {cities?.map((city: any) => (
+          {cities.map((city) => (
             <SelectItem key={city.id} value={city.id.toString()}>
               {city.name}, {city.state}
             </SelectItem>
           ))}
         </SelectContent>
       </Select>
-      
+
       <Button
         variant="outline"
         size="sm"

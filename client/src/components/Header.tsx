@@ -3,8 +3,8 @@ import { Link, useLocation } from "wouter";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { Menu, ChevronDown } from "lucide-react";
-import logoImage from "@assets/ChatGPT Image Jun 17, 2025, 11_45_25 AM_1750148953001.png";
-import { useAuth } from "@/hooks/useAuth";
+import logoImage from "../../attached_assets/ChatGPT Image Jun 17, 2025, 11_45_25 AM_1750148953001.png";
+import { useAuth } from "../hooks/useAuth";
 import {
   DropdownMenu,
   DropdownMenuContent,

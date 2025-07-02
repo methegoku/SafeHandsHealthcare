@@ -17,7 +17,14 @@ export default defineConfig({
     emptyOutDir: true,
   },
   server: {
-    port: 3232,
+    port: 3232, // ✅ Frontend will run on http://localhost:3232
     host: true,
+    proxy: {
+      "/api": {
+        target: "http://localhost:6550", // ✅ Backend server
+        changeOrigin: true,
+        secure: false,
+      },
+    },
   },
 });
