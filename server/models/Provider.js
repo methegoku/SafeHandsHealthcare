@@ -159,7 +159,7 @@ module.exports = (sequelize, DataTypes) => {
     Provider.hasMany(models.ProviderService, { foreignKey: 'providerId', as: 'services' });
     Provider.hasMany(models.Booking, { foreignKey: 'providerId', as: 'bookings' });
     Provider.hasMany(models.Review, { foreignKey: 'providerId', as: 'reviews' });
-    Provider.hasMany(models.ProviderAvailability, { foreignKey: 'providerId', as: 'availability' });
+    Provider.hasMany(models.ProviderAvailability, { foreignKey: 'providerId', as: 'availabilities' });
   };
 
   return Provider;
