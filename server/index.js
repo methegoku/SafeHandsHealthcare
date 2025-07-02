@@ -22,7 +22,7 @@ const paymentRoutes = require('./routes/payments');
 const adminRoutes = require('./routes/admin');
 
 const app = express();
-const PORT = process.env.PORT || 6559;
+const PORT = process.env.PORT || 6550;
 
 // Security middleware
 app.use(helmet());
